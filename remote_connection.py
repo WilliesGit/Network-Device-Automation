@@ -33,4 +33,32 @@ def sshLogin(ip_addr, username, password, secret):
   except:
     pass
 
+def main():
+    print("\n")
+    print("***WELCOME TO THE NETWORK REMOTE CONNECTION***")
+    print("\n===============================================")
+    try:
+        while True:
+            print("\n")
+            print("1. Telnet Remote Connection")
+            print("2. SSH Remote Connection")
+            print("3. Quit")
+
+            option = input("\nPlease enter an option to connect to a device:  ")
+
+            if option == "1":
+               pass
+            
+            elif option == '3' or option == 'q':
+              pass
+
+            else:
+               pass
+    except:
+      pass
+
+
+if __name__ == "__main__":
+   main()
+
 
