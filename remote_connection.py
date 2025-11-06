@@ -1,4 +1,8 @@
 from netmiko import ConnectHandler 
+from difflib import HtmlDiff #For comparing differences
+import ipaddress  #To check valid IP address
+import re 
+from getpass import getpass
 
 
 
@@ -47,15 +51,33 @@ def main():
             option = input("\nPlease enter an option to connect to a device:  ")
 
             if option == "1":
-               pass
+                print("===============================================\n")
+                print(f"{green}This is an unsecured connection using Telnet{reset}")
+
+                ip_addr = input("Please enter Host IP address: ")
+                username = input("Please enter Host Username: ")
+                password = getpass("Please enter Host Password: ")
+                secret = getpass("Please enter the privilege enabled password: ")
+
+
+            elif option == '2':
+                print("\n===============================================\n")
+                print(f"{green}This is a Secured connection using SSH{reset}")
+
+                ip_addr = (input("Please enter Host IP address: "))
+                username = input("Please enter Host Username: ")
+                password = getpass("Please enter Host Password: ")
+                secret = getpass("Please enter the privilege enabled password: ")
             
             elif option == '3' or option == 'q':
-              pass
+                print("Goodbye")
+                break
 
             else:
-               pass
-    except:
-      pass
+                print(f"{red}Please enter a valid option{reset}")
+        
+    except (RuntimeError, TypeError, NameError,  KeyboardInterrupt) as e:
+        print(f"{e}")
 
 
 if __name__ == "__main__":
