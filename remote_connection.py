@@ -5,6 +5,12 @@ import re
 from getpass import getpass
 
 
+#Color codes
+red = '\033[91m'
+reset = '\033[0m'
+green = '\033[92m'
+blue = '\033[94m'
+
 
 #Function for Telnet Connection
 def telnetLogin(ip_addr, username, password, secret):
@@ -19,8 +25,32 @@ def telnetLogin(ip_addr, username, password, secret):
 
       connection = ConnectHandler(**device_ConfigTelnet)
 
-  except:
-    pass
+      #Validation for failed session
+        if connection is None:
+            print("Failed to establish SSH connection")
+
+        #Enter Privilege enable mode if secret is provided
+        if secret != "":
+            connection.enable()
+
+       
+        #Calling the hostnameConfig() function
+        hostnameConfig(connection)
+  
+
+        #Retrieving tranpsort input information
+        trans_input_info = connection.remote_conn.sock 
+        remote_ip, remote_port = trans_input_info.getpeername()
+        print(f"Connection established through: {blue}{remote_ip}:{remote_port}{reset}")
+        print("Telnet Session Closed!")
+        print("===============================================")
+       
+        connection.disconnect()
+
+        return connection
+
+  except (RuntimeError, TypeError, NameError, OSError, netmiko.NetMikoTimeoutException) as e:
+    print(f"{red}Error: {e}{reset}")
 
 
 def sshLogin(ip_addr, username, password, secret):
