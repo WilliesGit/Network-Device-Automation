@@ -32,12 +32,10 @@ def telnetLogin(ip_addr, username, password, secret):
         #Enter Privilege enable mode if secret is provided
         if secret != "":
             connection.enable()
-
        
         #Calling the hostnameConfig() function
         hostnameConfig(connection)
   
-
         #Retrieving tranpsort input information
         trans_input_info = connection.remote_conn.sock 
         remote_ip, remote_port = trans_input_info.getpeername()
@@ -125,7 +123,21 @@ def main():
                 password = getpass("Please enter Host Password: ")
                 secret = getpass("Please enter the privilege enabled password: ")
 
+                #Input validations
+                if (ip_addr == "" or username == "" or password == "" ):
+                    print(f"{red}Fields cannot be empty{reset}")
+                    continue
                 
+                #Validating IP address version
+                try:
+                    ip, ip_version = validateIP(ip_addr)
+                
+                    #Calling the telnet function
+                    telnetLogin(str(ip), username, password, secret)
+                  
+                except (RuntimeError, TypeError, NameError, ValueError, OSError) as e:
+                    print(f"{red}Error: {e}{reset}")
+
 
 
             elif option == '2':
@@ -136,6 +148,22 @@ def main():
                 username = input("Please enter Host Username: ")
                 password = getpass("Please enter Host Password: ")
                 secret = getpass("Please enter the privilege enabled password: ")
+
+                #Input validations
+                if (ip_addr == "" or username == "" or password == "" ):
+                    print(f"{red}Fields cannot be empty{reset}")
+                    continue
+
+                #Validating IP address version
+                try:
+                    ip, ip_version = validateIP(ip_addr)
+                   
+                    #Calling the SSH function
+                    sshLogin(str(ip), username, password, secret)
+                  
+                except (RuntimeError, TypeError, NameError, ValueError, OSError) as e:
+                    print(f"{red}Error: {e}{reset}")
+
             
             elif option == '3' or option == 'q':
                 print("Goodbye")
