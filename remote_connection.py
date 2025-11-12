@@ -100,6 +100,30 @@ def validateIP(ip_addr):
         raise ValueError(f"{e}")
 
 
+#Function to save configuration to file
+def saveToFile(filename, config_type):
+    try:
+
+        with open(filename, 'w') as con_file:
+            con_file.write(config_type) 
+            
+        return filename    
+
+    except IOError as error:
+        print("An error occured writing to file: ", error)
+    
+
+#Function to read configuration from file
+def readFromFile(filename):
+    try:
+        with open(filename, 'r') as con_file:
+           readFile = con_file.read().splitlines()   
+        
+        return readFile
+    except IOError as error:
+        print("An error occured reading from file: ", error)
+
+
 
 def main():
     print("\n")
