@@ -124,6 +124,53 @@ def readFromFile(filename):
         print("An error occured reading from file: ", error)
 
 
+#Function to Establish the connections
+def connection(device_config):
+
+  #Establishes a connection 
+  connection = ConnectHandler(**device_config)
+
+  #Sub-Menu Options for Other Configuration
+  try:
+      while True:
+          print("\n")
+          print("===============================================\n")
+          print("1. Configure Hostname")
+          print("2. Save Running Configuration")
+          print("3. Save Startup Configuration")
+          print("4. Compare Running and Startup Configuration")
+          print("5. Compare Running Configuration and Cisco Device Hardening Advice")
+          print("6. Quit")
+
+          option = input("\nPlease enter an option :  ")
+
+          if option == '1':
+              hostnameConfig(connection)
+
+          elif option == '2':
+              runningConfig(connection)
+
+          elif option == '3':
+              startConfig(connection)
+
+          elif option == '4':
+              compareRunStart(connection)
+
+          elif option == '5':
+              compareRun_CiscoHard(connection)
+
+          elif option == '6' or option == 'q':
+              break
+
+          else:
+              print(f"{red}Please enter a valid option{reset}")
+
+      return connection
+
+  except netmiko.NetMikoTimeoutException as error: 
+      print(f"{red}Connection timed out: {error}{reset}")
+      return None
+
 
 def main():
     print("\n")
