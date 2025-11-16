@@ -88,6 +88,48 @@ def sshLogin(ip_addr, username, password, secret):
   except (RuntimeError, TypeError, NameError, OSError, netmiko.NetMikoTimeoutException) as e:
       print(f"{red}Error: {e}{reset}")
 
+#Configure hostname function
+def hostnameConfig(connection):
+  try:
+      print("===============================================")
+
+      #Check for valid Hostname input
+      while True:
+          hostnameInput = input("\nPlease enter Host Name:  ")
+
+          if not hostnameInput:
+              print(f"\n{red}Hostname field cannot be empty{reset}")
+              continue
+
+          if " " in hostnameInput:
+              print(f"\n{red}Invalid Hostname: Hostname cannot contain spaces{reset}") 
+              continue
+
+          if not hostnameInput[0].isalpha():
+              print(f"\n{red}Invalid Hostname: Hostname must begin with a letter{reset}")
+              continue
+
+          if not re.match(r'^[A-Za-z0-9-]+$', hostnameInput):
+              print(f"\n{red}Invalid Hostname: Only numbers, letters and hyphens are allowed{reset}")
+              continue
+
+          if len(hostnameInput) >= 63:
+              print(f"{red}Invalid Hostname: Maximum hostname character length is 63 characters{reset}")
+              continue
+          
+          else:
+              #Configuring the hostname
+              hostname = [f"hostname {hostnameInput}"]
+              connection.send_config_set(hostname)
+
+              print("\n===============================================")
+              output = connection.send_command('show run | include hostname')
+              print(f"{blue}{output}{reset}")
+              break
+  
+  except (NameError, AttributeError, RuntimeError) as e:
+      print(f"{red}Error: {e}{reset}")
+
 
 #To validate IP address      
 def validateIP(ip_addr):
