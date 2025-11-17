@@ -130,6 +130,49 @@ def hostnameConfig(connection):
   except (NameError, AttributeError, RuntimeError) as e:
       print(f"{red}Error: {e}{reset}")
 
+#Retrieve running configuration function
+def runningConfig(connection):
+    run_output = connection.send_command('show running-config')
+    
+    while True:
+        runFileName = input("Enter a filename (.txt) to save Running Configuration: ")
+
+        if not runFileName:
+            print(f"\n{red}File name field cannot be  cannot be empty{reset}\n")
+            continue
+
+        else:
+            #Calling the saveToFile Function
+            runFile = saveToFile(runFileName, run_output)
+            if runFile:
+                print("\n===============================================")
+                print(f"\n{green}Running configuration saved to File as: {reset} {runFileName}")
+                break
+
+    return runFileName
+
+
+#Retrieve startup configuration function
+def startConfig(connection):
+    start_output = connection.send_command('show startup-config')
+    
+    while True:
+        startFileName = input("Enter a filename (.txt) to save Startup Configuration: ")
+
+        if not startFileName:
+            print(f"\n{red}File name field cannot be  cannot be empty{reset}\n")
+            continue
+
+        else:
+            #Calling the saveToFile Function
+            startFile = saveToFile(startFileName, start_output)
+            if startFile:
+                print("\n===============================================")
+                print(f"{green}\nStartup configuration saved to File as: {reset}{startFileName}")
+                break
+
+    return startFile
+
 
 #To validate IP address      
 def validateIP(ip_addr):
