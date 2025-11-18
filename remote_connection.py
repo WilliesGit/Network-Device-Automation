@@ -88,6 +88,7 @@ def sshLogin(ip_addr, username, password, secret):
   except (RuntimeError, TypeError, NameError, OSError, netmiko.NetMikoTimeoutException) as e:
       print(f"{red}Error: {e}{reset}")
 
+
 #Configure hostname function
 def hostnameConfig(connection):
   try:
@@ -130,6 +131,8 @@ def hostnameConfig(connection):
   except (NameError, AttributeError, RuntimeError) as e:
       print(f"{red}Error: {e}{reset}")
 
+
+
 #Retrieve running configuration function
 def runningConfig(connection):
     run_output = connection.send_command('show running-config')
@@ -170,8 +173,46 @@ def startConfig(connection):
                 print("\n===============================================")
                 print(f"{green}\nStartup configuration saved to File as: {reset}{startFileName}")
                 break
-
     return startFile
+
+
+#Retrieve and Compare Running and Startup configuration function
+def compareRunStart(connection):
+  try:
+      run_output = connection.send_command('show running-config')
+      start_output = connection.send_command('show startup-config')
+      print("\n===============================================\n")
+
+      while True:
+      
+        runFileName = input("Enter a filename (.txt) for running configuration: ")
+        startFileName = input("Enter a filename (.txt) for startup configuration: ")
+
+        if not runFileName or not startFileName:
+            print(f"\n{red}File name field cannot be  cannot be empty{reset}\n")
+            continue
+
+        else:
+            #Calling the saveToFile Function
+            saveToFile(runFileName, run_output)
+            saveToFile(startFileName, start_output)
+
+            #Calling the readFromFile Function
+            runConFile = readFromFile(runFileName)
+            startConFile = readFromFile(startFileName)
+
+            #Comparing the files
+            diff = HtmlDiff()
+            compRunStart = diff.make_file(runConFile, startConFile)
+            with open("diff.html", "w", encoding="utf-8") as diffFile:
+                diffFile.write(compRunStart)
+
+            if diffFile:
+                print(f"\n{green}Comparison complete. See {reset}diff.html")
+                break
+
+  except (RuntimeError, TypeError, NameError, AttributeError, KeyboardInterrupt, ValueError) as e:
+          print(f"{red}Error: {e}{reset}")
 
 
 #To validate IP address      
