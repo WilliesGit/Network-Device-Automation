@@ -215,6 +215,128 @@ def compareRunStart(connection):
           print(f"{red}Error: {e}{reset}")
 
 
+#Compare Running configuration with Cisco Hardening Advice  
+def compareRun_CiscoHard(connection):
+  try:
+      #Calling the runningConfig() function to retrieve running configuration 
+      runCon = runningConfig(connection)
+      print("\n===============================================\n")
+
+      try:
+        with open(runCon, 'r') as f:
+                runConFile = f.readlines()
+      except IOError as error:
+        print("An error occured reading from file: ", error)
+        
+
+      #Cisco Device Hardening Advice
+      ciscoHardList = {
+          'username <name> secret <password>' : r'username\s+\S+\s+secret\s+\S+', 
+          'no service password-recovery' : r'no service password-recovery',
+          'memory reserve console 4096' : r'memory reserve console 4096',
+          'ip options drop' : r'ip options drop',
+          'no ip source-route' : r'no ip source-route'
+                  
+      }
+
+      #List to store missing cisco hardening advice configuration
+      hardCommand = []
+
+      #Running the comparison
+      for advice, pattern in ciscoHardList.items():
+          found = False
+          for line in runConFile:
+              line = line.strip()
+              if re.search(pattern, line, re.IGNORECASE):
+                  found = True
+                  break
+        
+          
+          if found:
+              print(f" Found:   {blue}{advice}{reset}")
+          else:
+              print(f" Not Found:   {red}{advice}{reset}")
+
+              #Appending the missing hardening adivce to the list
+              hardCommand.append(advice)
+        
+
+            
+      #Fixing missing hardening adivce to the list
+      for misCmd in hardCommand:
+
+          if misCmd == 'username <name> secret <password>':
+              option = input("\nDo you wish to fix the configuration? (Y or N): ")
+              if option.upper() == 'Y': 
+                print(f" ---> Adding Missing Command:  {blue}{misCmd}{reset}")
+
+                username = input("Please enter a username: ")
+                secret = getpass("Please enter password: ")
+
+                command = [f"username {username} secret {secret}"]
+                connection.send_config_set(command)
+                continue
+
+              elif option.upper() == 'N':
+                  print("\nSkipping configuration")
+                  break
+
+          elif misCmd == 'no service password-recovery' :
+              option = input("\nDo you wish to fix the configuration? (Y or N): ")
+
+              if option.upper() == 'Y': 
+                print(f" ---> Adding Missing Command:  {blue}{misCmd}{reset}")
+                command = ["no service password-recovery"]
+                connection.send_config_set(command)
+
+              elif option.upper() == 'N':
+                  print("\nSkipping configuration")
+                  break
+
+ 
+          elif misCmd == 'memory reserve console 4096' :
+              option = input("\nDo you wish to fix the configuration? (Y or N): ")
+
+              if option.upper() == 'Y': 
+                print(f" ---> Adding Missing Command:  {blue}{misCmd}{reset}")
+                command = ["memory reserve console 4096"]
+                connection.send_config_set(command)
+
+              elif option.upper() == 'N':
+                  print("\nSkipping configuration")
+                  break
+
+
+          elif misCmd == 'ip options drop' :
+              option = input("\nDo you wish to fix the configuration? (Y or N): ")
+
+              if option.upper() == 'Y': 
+                print(f" ---> Adding Missing Command:  {blue}{misCmd}{reset}")
+                command = ["ip options drop"]
+                connection.send_config_set(command)
+
+              elif option.upper() == 'N':
+                  print("\nSkipping configuration")
+                  break
+
+
+          elif misCmd == 'no ip source-route' :
+              option = input("\nDo you wish to fix the configuration? (Y or N): ")
+
+              if option.upper() == 'Y': 
+                print(f" ---> Adding Missing Command:  {blue}{misCmd}{reset}")
+                command = ["no ip source-route"]
+                connection.send_config_set(command)
+
+              elif option.upper() == 'N':
+                  print("\nSkipping configuration")
+                  break
+
+  except (RuntimeError, TypeError, NameError, AttributeError, KeyboardInterrupt, ValueError) as e:
+          print(f"{red}Error: {e}{reset}")
+  
+
+
 #To validate IP address      
 def validateIP(ip_addr):
     try:
